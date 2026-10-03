@@ -68,18 +68,18 @@ an edit to the vault, not the app.
 
 ## Two repos
 
-`JimLundin/vault-pages` (public, this repo) holds the app's source and serves it from GitHub Pages;
-`JimLundin/my-vault` (private) holds only the vault. They meet in three places:
+`JimLundin/vaulter` (public, this repo) holds the app's source and serves it from GitHub Pages;
+`JimLundin/vault` (private) holds only the vault. They meet in three places:
 
 | Where | What |
 |---|---|
-| Runtime | the app reads and writes the vault through the GitHub API (`VITE_VAULT_REPO`, default `JimLundin/my-vault@main`), with the sealed token, a fine-grained PAT for `my-vault` only |
-| The vault's CI | `my-vault`'s check workflow checks out this repo's `main` and runs `tools/check.ts --vault .` |
-| Shell sessions | this repo cloned next to the vault (`../vault-pages`); the audit and set-ext run from the vault root |
+| Runtime | the app reads and writes the vault through the GitHub API (`VITE_VAULT_REPO`, default `JimLundin/vault@main`), with the sealed token, a fine-grained PAT for `vault` only |
+| The vault's CI | `vault`'s check workflow checks out this repo's `main` and runs `tools/check.ts --vault .` |
+| Shell sessions | this repo cloned next to the vault (`../vaulter`); the audit and set-ext run from the vault root |
 
-The app moved here from `my-vault/site` on 2026-10-03, as a fresh first commit (the older history holds
-personal content). The URL stayed https://jimlundin.github.io/vault-pages/, so the origin, and with it
-every device's remembered key and encrypted cache, survived the move.
+The app moved here from the vault's `site/` on 2026-10-03, as a fresh first commit (the older history
+holds personal content), and the repos were renamed the same day (`vault-pages` → `vaulter`, `my-vault` →
+`vault`). The app is at https://jimlundin.github.io/vaulter/.
 
 For a vault that isn't this one: area colours keyed by area order instead of
 name (`app/core/base.css`), and the special cases in Home (`active`, `leisure`), the check (`person`, `moc`,

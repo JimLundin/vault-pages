@@ -1,26 +1,26 @@
 # The app
 
-The browser app Jim reads the vault in, at **https://jimlundin.github.io/vault-pages/**. It holds no notes:
-behind a password it reads them at runtime from the vault, the private repo `JimLundin/my-vault`, keeps
+The browser app Jim reads the vault in, at **https://jimlundin.github.io/vaulter/**. It holds no notes:
+behind a password it reads them at runtime from the vault, the private repo `JimLundin/vault`, keeps
 them encrypted on the device, and works offline. Notes never depend on anything here except the MDX
 components (the vault's `meta/conventions.md` §13). The design and its history: `PLAN-browser-app.md`
-(written while the app still lived in `my-vault/site`).
+(written while the app still lived in the vault, as `site/`, and the repos were `my-vault` and `vault-pages`).
 
 ## Commands
 
 | Command | Does |
 |---|---|
 | `npm ci` | install |
-| `npm run check` | the vault's check (`tools/check.ts`) over `../my-vault` (or `node tools/check.ts --vault <dir>`): links, heading anchors, wikilinks, raw HTML, what MDX may contain (`core/mdx-rules.ts`), and the vault's schema (`meta/schema.yaml`, held to it by `core/schema.ts` and `core/relations.ts`). Fast; run before every push to the vault. The vault's CI runs it on every push too, from this repo's `main` |
+| `npm run check` | the vault's check (`tools/check.ts`) over `../vault` (or `node tools/check.ts --vault <dir>`): links, heading anchors, wikilinks, raw HTML, what MDX may contain (`core/mdx-rules.ts`), and the vault's schema (`meta/schema.yaml`, held to it by `core/schema.ts` and `core/relations.ts`). Fast; run before every push to the vault. The vault's CI runs it on every push too, from this repo's `main` |
 | `npm run dev` | the app on a vault folder you pick (`app/backends/folder.ts`, Chromium only), live: edits to notes show without a reload; no password, no Node at runtime |
 | `npm run build` | the app into `dist/` |
 | `npm run lint` / `npm run format` | Biome: lint and format check (CI), or fix both in place. Style: 2 spaces, single quotes, semicolons, trailing commas, 100 columns (`biome.json`) |
 | `npm test` / `npm run typecheck` | the tests (Vitest: `app/`, `core/`) and TypeScript over `app/`, `core/` and `tools/` |
 | `node tools/seal-secrets.ts <out>` | seal the token and key with the password from the environment (what CI runs; see Publishing) |
 
-With this repo cloned next to the vault (`../vault-pages`) and `npm ci` run in it, from the vault root:
-`node ../vault-pages/tools/check.ts` (the check), `node ../vault-pages/tools/audit.ts` (the weekly
-sweep's report, changes nothing) and `node ../vault-pages/tools/set-ext.ts "Note" md|mdx` (switch a
+With this repo cloned next to the vault (`../vaulter`) and `npm ci` run in it, from the vault root:
+`node ../vaulter/tools/check.ts` (the check), `node ../vaulter/tools/audit.ts` (the weekly
+sweep's report, changes nothing) and `node ../vaulter/tools/set-ext.ts "Note" md|mdx` (switch a
 note's extension and rewrite every link to it). Each takes `--vault <dir>`, default the working directory.
 
 All code is TypeScript. Node 24 runs the scripts directly (type stripping), so only erasable syntax,
@@ -67,7 +67,7 @@ Notes don't publish: the app reads the vault's `main` itself. Every push here ru
 Source: GitHub Actions). This repo is public: never commit a `secrets.json`, notes, or anything personal
 (test fixtures and examples are fictional).
 
-The vault's own CI (`my-vault/.github/workflows/check.yml`) checks out this repo's `main` and runs its
+The vault's own CI (`vault/.github/workflows/check.yml`) checks out this repo's `main` and runs its
 check over the notes, so a change to the rules here applies to the vault's next push.
 
 What the seal needs, in this repo's settings:
@@ -75,11 +75,11 @@ What the seal needs, in this repo's settings:
 | | Kind | What |
 |---|---|---|
 | `VAULT_PASSWORD` | secret | the app's password (12+ characters; long and random is best: the sealed file is public) |
-| `VAULT_GITHUB_TOKEN` | secret | a fine-grained PAT for `my-vault` only (Contents read/write, Metadata read), with an expiry |
+| `VAULT_GITHUB_TOKEN` | secret | a fine-grained PAT for `vault` only (Contents read/write, Metadata read), with an expiry |
 | `VAULT_OPENAI_KEY` | secret | optional: the agent's key, from a project with a spend limit |
 | `VAULT_SALT` | variable | 16 random bytes, base64 (`openssl rand -base64 16`); set once |
 | `VAULT_OPENAI_API` | variable | optional: the agent's OpenAI-compatible endpoint (an API proxy); empty means api.openai.com |
-| `VAULT_REPO` | variable | optional: the vault the app reads, `owner/name@branch`; default `JimLundin/my-vault@main` |
+| `VAULT_REPO` | variable | optional: the vault the app reads, `owner/name@branch`; default `JimLundin/vault@main` |
 
 A new token or key: update the secret and run the workflow (Actions → Deploy → Run workflow);
 devices stay signed in. To sign every device out, change `VAULT_SALT` (or the password) and run it.
