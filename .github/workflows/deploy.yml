@@ -1,0 +1,58 @@
+# The app's CI: on every push the tests, the type check and lint; on main, build, seal the secrets in, and
+# deploy to GitHub Pages (Settings → Pages → Source: GitHub Actions). Run it by hand after changing a secret.
+name: Deploy
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: 24, cache: npm }
+      - name: Build
+        env:
+          VITE_OPENAI_API: ${{ vars.VAULT_OPENAI_API }}
+          VITE_VAULT_REPO: ${{ vars.VAULT_REPO }}
+        run: npm ci && npm run build
+      - name: Seal the secrets into it
+        env:
+          VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
+          VAULT_GITHUB_TOKEN: ${{ secrets.VAULT_GITHUB_TOKEN }}
+          VAULT_OPENAI_KEY: ${{ secrets.VAULT_OPENAI_KEY }}
+          VAULT_SALT: ${{ vars.VAULT_SALT }}
+        run: |
+          node tools/seal-secrets.ts dist/secrets.json
+          printf 'User-agent: *\nDisallow: /\n' > dist/robots.txt
+      - uses: actions/upload-pages-artifact@v4
+        with: { path: dist }
+      - id: deploy
+        uses: actions/deploy-pages@v4

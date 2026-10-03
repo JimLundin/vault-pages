@@ -1,0 +1,4 @@
+node_modules/
+dist/
+# Sealed in CI, never committed.
+app/public/secrets.json

@@ -1,0 +1,136 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "files": {
+    "includes": [
+      "app/**",
+      "core/**",
+      "tools/**",
+      "*.ts",
+      "*.json",
+      "!**/dist",
+      "!package-lock.json"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "double",
+      "semicolons": "always",
+      "trailingCommas": "all",
+      "arrowParentheses": "always"
+    }
+  },
+  "linter": {
+    "rules": {
+      "preset": "all",
+      "suspicious": {
+        "noUnknownAttribute": "off",
+        "noAlert": "off",
+        "noConsole": "error",
+        "noEqualsToNull": "off",
+        "noBitwiseOperators": "off",
+        "noExplicitAny": "warn"
+      },
+      "style": {
+        "noJsxLiterals": "off",
+        "useComponentExportOnlyModules": "off",
+        "useBlockStatements": "off",
+        "noTernary": "off",
+        "noNestedTernary": "off",
+        "noMagicNumbers": "off",
+        "noHexColors": "off",
+        "noNonNullAssertion": "off",
+        "useExplicitLengthCheck": "off",
+        "useNamingConvention": "off",
+        "noIncrementDecrement": "off",
+        "noContinue": "off",
+        "noNegationElse": "off",
+        "useExportsLast": "off",
+        "noExcessiveClassesPerFile": "off",
+        "noExcessiveLinesPerFile": "off",
+        "useFilenamingConvention": "off"
+      },
+      "complexity": {
+        "noImplicitCoercions": "off",
+        "noExcessiveLinesPerFunction": "off",
+        "noExcessiveCognitiveComplexity": "off",
+        "useMaxParams": "off"
+      },
+      "performance": {
+        "useTopLevelRegex": "off",
+        "noJsxPropsBind": "off"
+      },
+      "nursery": {
+        "useStrictBooleanExpressions": "off",
+        "noFloatingPromises": "error",
+        "noMisusedPromises": "error"
+      }
+    },
+    "domains": {
+      "astro": "none",
+      "drizzle": "none",
+      "next": "none",
+      "qwik": "none",
+      "reactNative": "none",
+      "solid": "none",
+      "svelte": "none",
+      "tailwind": "none",
+      "turborepo": "none",
+      "vue": "none",
+      "react": "all",
+      "project": "all",
+      "test": "all",
+      "types": "all"
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "off"
+      }
+    }
+  },
+  "css": {
+    "linter": {
+      "enabled": true
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["tools/**", "vite.config.ts"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNodejsModules": "off",
+            "noProcessGlobal": "off"
+          },
+          "style": {
+            "noProcessEnv": "off",
+            "noDefaultExport": "off"
+          },
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.css"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noImportantStyles": "off"
+          },
+          "style": {
+            "noDescendingSpecificity": "off"
+          }
+        }
+      }
+    }
+  ]
+}

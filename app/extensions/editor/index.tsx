@@ -1,0 +1,41 @@
+// Editing: a file as text (#/edit/<path>/), a rename (#/rename/<path>/, and the agent's renameNote), the staged edits with their diffs, the check and the commit
+// (#/changes/), and what the app committed, with a revert (#/history/).
+import type { Extension } from '../../core/extension.ts';
+import { Edit } from './Edit.tsx';
+import { Changes } from './Changes.tsx';
+import { History } from './History.tsx';
+import { Rename } from './Rename.tsx';
+
+export const editor: Extension = {
+  id: 'editor',
+  page(path) {
+    if (path === '/changes/') return { title: 'Changes', body: <Changes /> };
+    if (path === '/history/') return { title: 'History', body: <History /> };
+    const m = /^\/(edit|rename)\/([^/]+)\/$/.exec(path);
+    if (!m) return null;
+    const file = decodeURIComponent(m[2]);
+    return m[1] === 'edit'
+      ? { title: `Edit ${file}`, body: <Edit key={file} path={file} /> }
+      : { title: `Rename ${file}`, body: <Rename key={file} path={file} /> };
+  },
+  nav: [
+    {
+      label: 'History',
+      href: '/history/',
+      order: 80,
+      summary: 'What the app committed, with a revert',
+      when: (h) => !!h.writer.history,
+    },
+    {
+      label: 'Changes',
+      href: '/changes/',
+      order: 90,
+      badge: (h) => Object.keys(h.writer.overlay?.files ?? {}).length,
+    },
+  ],
+  noteActions: [
+    { label: 'edit', href: (n) => `/edit/${encodeURIComponent(n.path)}/` },
+    { label: 'rename', href: (n) => `/rename/${encodeURIComponent(n.path)}/` },
+  ],
+  tools: async (ctx) => (await import('./tools.ts')).editorTools(ctx),
+};
